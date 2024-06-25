@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<head>
+          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+          <title>Babylon Template</title>
+          <style>
+                    html,
+                    body {
+                              overflow: hidden;
+                              width: 100%;
+                              height: 100%;
+                              margin: 0;
+                              padding: 0;
+                    }
+                    #renderCanvas {
+                              width: 100%;
+                              height: 100%;
+                              touch-action: none;
+                    }
+          </style>
+          <script src="https://cdn.babylonjs.com/babylon.js"></script>
+</head>
+<body>
+          <canvas id="renderCanvas"></canvas>
+          <script>
+                    const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+                    const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+                    const createScene = function () {
+                              // Creates a basic Babylon Scene object
+                              const scene = new BABYLON.Scene(engine);
+                              // Creates and positions a free camera
+                              const camera = new BABYLON.FreeCamera("camera1",
+                                        new BABYLON.Vector3(0, 5, -10), scene);
+                              // Targets the camera to scene origin
+                              camera.setTarget(BABYLON.Vector3.Zero());
+                              // This attaches the camera to the canvas
+                              camera.attachControl(canvas, true);
+                              // Creates a light, aiming 0,1,0 - to the sky
+                              const light = new BABYLON.HemisphericLight("light",
+                                        new BABYLON.Vector3(0, 1, 0), scene);
+                              // Dim the light a small amount - 0 to 1
+                              light.intensity = 0.7;
+                              // Built-in 'sphere' shape.
+                              const sphere = BABYLON.MeshBuilder.CreateSphere("sphere",
+                                        { diameter: 2, segments: 32 }, scene);
+                              // Move the sphere upward 1/2 its height
+                              sphere.position.y = 1;
+                              
+                              const box = BABYLON.MeshBuilder.CreateBox("box",
+                                        { height: 5, width: 2, depth: 0.5 }, scene);
+                              box.position = new BABYLON.Vector3(3, 1, 3);
+                              // Built-in 'ground' shape.
+                              const ground = BABYLON.MeshBuilder.CreateGround("ground",
+                                        { width: 6, height: 6 }, scene);
+
+                              // Create a path for the curved line
+                              const points = [];
+                              for (let i = 0; i <= 20; i++) {
+                                        const x = i * 0.3;
+                                        const y = Math.sin(i * 0.3) * 2;  // Genera una curva senoidal
+                                        const z = 0;
+                                        points.push(new BABYLON.Vector3(x, y, z));
+                              }
+
+                              // Create the curved line
+                              const curvedLine = BABYLON.MeshBuilder.CreateLines("curvedLine", {points: points}, scene);
+
+
+                              // Create a sine wave plane
+                              const width = 10;
+                              const depth = 10;
+                              const subdivisions = 1000;
+                              const positions = [];
+
+                              for (let z = 0; z <= subdivisions; z++) {
+                                        for (let x = 0; x <= subdivisions; x++) {
+                                                  const xPos = (x / subdivisions) * width - width / 2;
+                                                  const zPos = (z / subdivisions) * depth - depth / 2;
+                                                  const yPos = Math.sin(xPos * 2 * Math.PI / width) * Math.cos(zPos * 2 * Math.PI / depth);
+                                                  positions.push(new BABYLON.Vector3(xPos, yPos, zPos));
+                                        }
+                              }
+
+                              const indices = [];
+                              for (let z = 0; z < subdivisions; z++) {
+                                        for (let x = 0; x < subdivisions; x++) {
+                                                  const a = x + z * (subdivisions + 1);
+                                                  const b = (x + 1) + z * (subdivisions + 1);
+                                                  const c = x + (z + 1) * (subdivisions + 1);
+                                                  const d = (x + 1) + (z + 1) * (subdivisions + 1);
+
+                                                  indices.push(a, b, c);
+                                                  indices.push(b, d, c);
+                                        }
+                              }
+
+                              const customMesh = new BABYLON.Mesh("custom", scene);
+                              const vertexData = new BABYLON.VertexData();
+                              vertexData.positions = positions.flatMap(p => [p.x, p.y, p.z]);
+                              vertexData.indices = indices;
+                              vertexData.applyToMesh(customMesh);
+                              
+                              return scene;
+                    };
+                    const scene = createScene(); //Call the createScene function
+                    // Register a render loop to repeatedly render the scene
+                    engine.runRenderLoop(function () {
+                              scene.render();
+                    });
+                    // Watch for browser/canvas resize events
+                    window.addEventListener("resize", function () {
+                              engine.resize();
+                    });
+          </script>
+
+</body>
+
+</html>
