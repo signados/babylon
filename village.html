@@ -48,11 +48,18 @@
                                         new BABYLON.Vector3(0, 1, 0), scene);
                               // Dim the light a small amount - 0 to 1
                               light.intensity = 0.7;
+
+                              // Load the sound and play it automatically once ready
+                              const music = new BABYLON.Sound("cello", "https://playground.babylonjs.com/sounds/cellolong.wav", scene, null, { loop: true, autoplay: true });
+
+
+
+
                               // Built-in 'sphere' shape.
-                              const sphere = BABYLON.MeshBuilder.CreateSphere("sphere",
+                              const box = BABYLON.MeshBuilder.CreateBox("box",
                                         { diameter: 2, segments: 32 }, scene);
                               // Move the sphere upward 1/2 its height
-                              sphere.position.y = 1;
+                              box.position.y = 1;
                               // Built-in 'ground' shape.
                               const ground = BABYLON.MeshBuilder.CreateGround("ground",
                                         { width: 6, height: 6 }, scene);
