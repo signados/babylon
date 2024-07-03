@@ -50,8 +50,8 @@
                                                   exitButton.background = "red";
                                                   exitButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
                                                   exitButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
-                                                  exitButton.top = "10px";
-                                                  exitButton.left = "-10px";
+                                                  exitButton.top = "250px";
+                                                  exitButton.left = "-250px";
 
                                                   exitButton.onPointerUpObservable.add(() => {
                                                             xr.baseExperience.exitXRAsync();
@@ -84,7 +84,6 @@
 
                                         return scene;
                               };
-
                               const scene = createScene();
 
                               engine.runRenderLoop(function () {
