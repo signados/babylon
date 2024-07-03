@@ -19,38 +19,65 @@
                               height: 100%;
                               touch-action: none;
                     }
+
+                    #exitButton {
+                              position: absolute;
+                              top: 10px;
+                              right: 10px;
+                              z-index: 100;
+                              padding: 10px 20px;
+                              background-color: #f00;
+                              color: #fff;
+                              border: none;
+                              border-radius: 5px;
+                              cursor: pointer;
+                    }
           </style>
 </head>
 
 <body>
           <canvas id="renderCanvas"></canvas>
+          <button id="exitButton">Exit VR</button>
           <script src="https://cdn.babylonjs.com/babylon.js"></script>
           <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
           <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
           <script>
                     window.addEventListener('DOMContentLoaded', function () {
-                              // Obtener el canvas
                               const canvas = document.getElementById('renderCanvas');
-
-                              // Crear el motor de Babylon.js
                               const engine = new BABYLON.Engine(canvas, true);
 
-                              // Crear la escena
                               const createScene = function () {
                                         const scene = new BABYLON.Scene(engine);
 
-                                        // Crear una cámara con experiencia XR
                                         BABYLON.WebXRDefaultExperience.CreateAsync(scene).then((xr) => {
                                                   xr.baseExperience.camera.position = new BABYLON.Vector3(0, 1.6, -5);
+
+                                                  document.getElementById('exitButton').addEventListener('click', function () {
+                                                            xr.baseExperience.exitXRAsync();
+                                                  });
+
+                                                  const input = xr.input;
+                                                  const controllers = input.controllers;
+
+                                                  controllers.forEach(controller => {
+                                                            controller.onMotionControllerInitObservable.add(motionController => {
+                                                                      const triggerComponent = motionController.getComponent("xr-standard-trigger");
+                                                                      if (triggerComponent) {
+                                                                                triggerComponent.onButtonStateChangedObservable.add((component) => {
+                                                                                          if (component.pressed) {
+                                                                                                    const pickInfo = scene.pick(controller.pointer.position);
+                                                                                                    if (pickInfo.hit && pickInfo.pickedMesh === sphere) {
+                                                                                                              pickInfo.pickedMesh.position = controller.pointer.position;
+                                                                                                    }
+                                                                                          }
+                                                                                });
+                                                                      }
+                                                            });
+                                                  });
                                         });
 
-                                        // Crear una luz
                                         const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-
-                                        // Crear un suelo
                                         const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 10, height: 10 }, scene);
-
-                                        // Crear una esfera
                                         const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 1 }, scene);
                                         sphere.position.y = 1;
 
@@ -59,12 +86,10 @@
 
                               const scene = createScene();
 
-                              // Iniciar el bucle de renderizado
                               engine.runRenderLoop(function () {
                                         scene.render();
                               });
 
-                              // Redimensionar el canvas si el tamaño de la ventana cambia
                               window.addEventListener('resize', function () {
                                         engine.resize();
                               });
