@@ -19,25 +19,11 @@
                               height: 100%;
                               touch-action: none;
                     }
-
-                    #exitButton {
-                              position: absolute;
-                              top: 10px;
-                              right: 10px;
-                              z-index: 100;
-                              padding: 10px 20px;
-                              background-color: #f00;
-                              color: #fff;
-                              border: none;
-                              border-radius: 5px;
-                              cursor: pointer;
-                    }
           </style>
 </head>
 
 <body>
           <canvas id="renderCanvas"></canvas>
-          <button id="exitButton">Exit VR</button>
           <script src="https://cdn.babylonjs.com/babylon.js"></script>
           <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
           <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
@@ -49,17 +35,32 @@
                               const createScene = function () {
                                         const scene = new BABYLON.Scene(engine);
 
+                                        // Crear experiencia XR
                                         BABYLON.WebXRDefaultExperience.CreateAsync(scene).then((xr) => {
                                                   xr.baseExperience.camera.position = new BABYLON.Vector3(0, 1.6, -5);
 
-                                                  document.getElementById('exitButton').addEventListener('click', function () {
+                                                  // Crear GUI avanzada
+                                                  const advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+                                                  // Crear botón de salida de VR
+                                                  const exitButton = BABYLON.GUI.Button.CreateSimpleButton("exitButton", "Exit VR");
+                                                  exitButton.width = "150px";
+                                                  exitButton.height = "40px";
+                                                  exitButton.color = "white";
+                                                  exitButton.background = "red";
+                                                  exitButton.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+                                                  exitButton.verticalAlignment = BABYLON.GUI.Control.VERTICAL_ALIGNMENT_TOP;
+                                                  exitButton.top = "10px";
+                                                  exitButton.left = "-10px";
+
+                                                  exitButton.onPointerUpObservable.add(() => {
                                                             xr.baseExperience.exitXRAsync();
                                                   });
 
-                                                  const input = xr.input;
-                                                  const controllers = input.controllers;
+                                                  advancedTexture.addControl(exitButton);
 
-                                                  controllers.forEach(controller => {
+                                                  const input = xr.input;
+                                                  input.onControllerAddedObservable.add(controller => {
                                                             controller.onMotionControllerInitObservable.add(motionController => {
                                                                       const triggerComponent = motionController.getComponent("xr-standard-trigger");
                                                                       if (triggerComponent) {
