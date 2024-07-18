@@ -69,8 +69,6 @@
                               groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
                               ground.material = groundMat;
 
-
-
                               const boxMat2 = new BABYLON.StandardMaterial("boxMat2");
                               boxMat2.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/cubehouse.png")
                               //options parameter to set different images on each side
@@ -87,16 +85,18 @@
                               house.position.x = 3;
                               house.position.y = .5;
 
-
-
                               // Textures
                               const roofMat = new BABYLON.StandardMaterial("roofMat");
                               roofMat.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/roof.jpg", scene);
                               const boxMat = new BABYLON.StandardMaterial("boxMat");
                               boxMat.diffuseTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/floor.png");
-
-                              roof.material = roofMat;
                               box.material = boxMat;
+                              roof.material = roofMat;
+
+                              // Merge meshes
+                              const houseAndRoof = BABYLON.Mesh.MergeMeshes([box, roof], true, false, null, false, true);
+                              houseAndRoof.position.x = -3;
+
 
                               return scene;
                     };
