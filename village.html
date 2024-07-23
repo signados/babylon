@@ -87,12 +87,26 @@
                               /**** World Objects *****/
                               const house = BABYLON.MeshBuilder.CreateBox("box", { faceUV: faceUV, wrap: true });
                               house.material = boxMat2;
-                              house.position.x = 3;
+                              house.position.x = 1;
                               house.position.y = .5;
 
                               // UNIÓN DE ELEMENOS
-                              //const houseAndRoof = BABYLON.Mesh.MergeMeshes([box, roof], true, false, null, false, true);
-                              // houseAndRoof.position.x = -3;
+                              const houseAndRoof = BABYLON.Mesh.MergeMeshes([box, roof], true, false, null, false, true);
+                              houseAndRoof.position.x = 0;
+                              houseAndRoof.position.y = 0;
+
+                              // Clona y es independiente
+                              const houseAndRoof2 = houseAndRoof.clone("clonedHouseAndRoof")
+                              houseAndRoof2.position.x = -3
+                              //houseAndRoof2.rotation.y = Math.PI / 3; // Rotación la copia
+
+                              // Instancia vinculada
+                              // las instancias comparten la misma geometría que el objeto original, pero aún deberían ser capaces de tener transformaciones (posición, rotación, escala) independientes.
+                              // Memoria: Las instancias ocupan menos memoria comparado con los clones porque comparten la geometría y el material del objeto original.
+                              const houseAndRoof3 = houseAndRoof.createInstance("InstanceHouseAndRoof")
+                              houseAndRoof3.position.x = -5
+
+                              houseAndRoof.rotation.y = Math.PI / 4; // Rotación el original
 
                               return scene;
                     };
