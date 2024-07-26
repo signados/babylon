@@ -34,7 +34,7 @@
                     const canvas = document.getElementById("renderCanvas"); // Get the canvas element
                     const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
                     const makeGround = scene => {
-                              const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 6, height: 6 }, scene);
+                              const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 20, height: 20 }, scene);
                               const groundMat = new BABYLON.StandardMaterial("groundMat");
                               groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
                               ground.material = groundMat;
@@ -44,7 +44,7 @@
                               light.intensity = 0.7;
                     }
                     const makeCamera = scene => {
-                              const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+                              const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 15, -25), scene);
                               camera.setTarget(BABYLON.Vector3.Zero());
                               camera.attachControl(canvas, true);
                     }
@@ -100,13 +100,19 @@
                               houseAndRoof2.position.x = -3
                               //houseAndRoof2.rotation.y = Math.PI / 3; // Rotación la copia
 
-                              // Instancia vinculada
-                              // las instancias comparten la misma geometría que el objeto original, pero aún deberían ser capaces de tener transformaciones (posición, rotación, escala) independientes.
+                              // ICloning gives you an independent copy
                               // Memoria: Las instancias ocupan menos memoria comparado con los clones porque comparten la geometría y el material del objeto original.
                               const houseAndRoof3 = houseAndRoof.createInstance("InstanceHouseAndRoof")
                               houseAndRoof3.position.x = -5
 
                               houseAndRoof.rotation.y = Math.PI / 4; // Rotación el original
+
+                              const houses = []
+                              for (let i = 0; i < 20; i++) {
+                                        houses[i] = houseAndRoof.createInstance("houses" + i)
+                                        houses[i].rotation.y = i + 3;
+                                        houses[i].position.z = i + 3;
+                              }
 
                               return scene;
                     };
