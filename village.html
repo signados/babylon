@@ -20,6 +20,19 @@
                               height: 100%;
                               touch-action: none;
                     }
+
+                    #holder {
+                              width: 80%;
+                              height: 100%;
+                              float: left;
+                    }
+
+                    #instructions {
+                              width: 20%;
+                              height: 100%;
+                              float: left;
+                              background-color: grey;
+                    }
           </style>
 
           <script src="https://cdn.babylonjs.com/babylon.js"></script>
@@ -27,8 +40,17 @@
 </head>
 
 <body>
+          <div id="holder">
+                    <canvas id="renderCanvas"></canvas>
+          </div>
+          <div id="instructions">
+                    <br />
+                    <h2>Instructions</h2>
+                    <br />
+                    Instructions Instructions Instructions Instructions Instructions
+                    Instructions Instructions Instructions Instructions Instructions
+          </div>
 
-          <canvas id="renderCanvas"></canvas>
 
           <script>
                     const canvas = document.getElementById("renderCanvas"); // Get the canvas element
@@ -44,8 +66,10 @@
                               light.intensity = 0.7;
                     }
                     const makeCamera = scene => {
-                              const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 15, -25), scene);
-                              camera.setTarget(BABYLON.Vector3.Zero());
+                              // const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 15, -25), scene);
+                              // camera.setTarget(BABYLON.Vector3.Zero());
+                              // camera.attachControl(canvas, true);
+                              const camera = new BABYLON.ArcRotateCamera("camera1", -Math.PI / 2, Math.PI / 2.5, 30, BABYLON.Vector3.Zero(), scene);
                               camera.attachControl(canvas, true);
                     }
                     const createScene = function () {
