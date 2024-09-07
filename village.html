@@ -1,156 +1,275 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+      <head>
+            <meta
+                  http-equiv="Content-Type"
+                  content="text/html; charset=utf-8"
+            />
+            <title>Babylon Template</title>
 
-<head>
-          <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-          <title>Babylon Template</title>
+            <style>
+                  html,
+                  body {
+                        overflow: hidden;
+                        width: 100%;
+                        height: 100%;
+                        margin: 0;
+                        padding: 0;
+                  }
 
-          <style>
-                    html,
-                    body {
-                              overflow: hidden;
-                              width: 100%;
-                              height: 100%;
-                              margin: 0;
-                              padding: 0;
-                    }
+                  #renderCanvas {
+                        width: 100%;
+                        height: 100%;
+                        touch-action: none;
+                  }
 
-                    #renderCanvas {
-                              width: 100%;
-                              height: 100%;
-                              touch-action: none;
-                    }
+                  #holder {
+                        width: 80%;
+                        height: 100%;
+                        float: left;
+                  }
 
-                    #holder {
-                              width: 80%;
-                              height: 100%;
-                              float: left;
-                    }
+                  #instructions {
+                        width: 20%;
+                        height: 100%;
+                        float: left;
+                        background-color: grey;
+                  }
+            </style>
 
-                    #instructions {
-                              width: 20%;
-                              height: 100%;
-                              float: left;
-                              background-color: grey;
-                    }
-          </style>
+            <script src="https://cdn.babylonjs.com/babylon.js"></script>
+            <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+      </head>
 
-          <script src="https://cdn.babylonjs.com/babylon.js"></script>
+      <body>
+            <div id="holder">
+                  <canvas id="renderCanvas"></canvas>
+            </div>
+            <div id="instructions">
+                  <br />
+                  <h2>Instructions</h2>
+                  <br />
+                  Instructions Instructions Instructions Instructions
+                  Instructions Instructions Instructions Instructions
+                  Instructions Instructions
+            </div>
 
-</head>
+            <script>
+                  const canvas = document.getElementById("renderCanvas"); // Get the canvas element
+                  const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
+                  // Asegúrate de que Earcut esté disponible para Babylon.js, lo traigo por CDN
+                  BABYLON.Earcut = window.earcut | window.earcut.default;
+                  console.log("Earcut asignado:", BABYLON.Earcut);
+                  const makeGround = (scene) => {
+                        const ground = BABYLON.MeshBuilder.CreateGround(
+                              "ground",
+                              { width: 20, height: 20 },
+                              scene
+                        );
+                        const groundMat = new BABYLON.StandardMaterial(
+                              "groundMat"
+                        );
+                        groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
+                        ground.material = groundMat;
+                  };
+                  const makeLight = (scene) => {
+                        const light = new BABYLON.HemisphericLight(
+                              "light",
+                              new BABYLON.Vector3(0, 1, 0),
+                              scene
+                        );
+                        light.intensity = 0.7;
+                  };
+                  const makeCamera = (scene) => {
+                        // const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 15, -25), scene);
+                        // camera.setTarget(BABYLON.Vector3.Zero());
+                        // camera.attachControl(canvas, true);
+                        const camera = new BABYLON.ArcRotateCamera(
+                              "camera1",
+                              -Math.PI / 2,
+                              Math.PI / 2.5,
+                              30,
+                              BABYLON.Vector3.Zero(),
+                              scene
+                        );
+                        camera.attachControl(canvas, true);
+                  };
+                  const makeCar = (scene) => {
+                        const outline = [
+                              new BABYLON.Vector3(-0.3, 2, -0.1),
+                              new BABYLON.Vector3(0.2, 2, -0.1),
+                        ];
+                        //curved front
+                        for (let i = 0; i < 20; i++) {
+                              outline.push(
+                                    new BABYLON.Vector3(
+                                          0.2 * Math.cos((i * Math.PI) / 40),
+                                          0,
+                                          0.2 * Math.sin((i * Math.PI) / 40) -
+                                                0.1
+                                    )
+                              );
+                        }
+                        //top
+                        outline.push(new BABYLON.Vector3(0, 0, 0.1));
+                        outline.push(new BABYLON.Vector3(-0.3, 0, 0.1));
+                        const car = BABYLON.MeshBuilder.ExtrudePolygon(
+                              "car",
+                              { shape: outline, depth: 0.2 },
+                              scene
+                        );
+                        car.rotation.x = BABYLON.Tools.ToRadians(-90);
+                        car.position.y = 0.2;
+                        car.position.z = -5;
 
-<body>
-          <div id="holder">
-                    <canvas id="renderCanvas"></canvas>
-          </div>
-          <div id="instructions">
-                    <br />
-                    <h2>Instructions</h2>
-                    <br />
-                    Instructions Instructions Instructions Instructions Instructions
-                    Instructions Instructions Instructions Instructions Instructions
-          </div>
+                        // Create a material for the car
+                        const carMaterial = new BABYLON.StandardMaterial(
+                              "carMaterial",
+                              scene
+                        );
+                        // Set the color of the material
+                        carMaterial.diffuseColor = new BABYLON.Color3(3, 1, 7); // Color (RGB format)
+                        // Assign the material to the car
+                        car.material = carMaterial;
 
-
-          <script>
-                    const canvas = document.getElementById("renderCanvas"); // Get the canvas element
-                    const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
-                    const makeGround = scene => {
-                              const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 20, height: 20 }, scene);
-                              const groundMat = new BABYLON.StandardMaterial("groundMat");
-                              groundMat.diffuseColor = new BABYLON.Color3(0, 1, 0);
-                              ground.material = groundMat;
-                    }
-                    const makeLight = scene => {
-                              const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
-                              light.intensity = 0.7;
-                    }
-                    const makeCamera = scene => {
-                              // const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 15, -25), scene);
-                              // camera.setTarget(BABYLON.Vector3.Zero());
-                              // camera.attachControl(canvas, true);
-                              const camera = new BABYLON.ArcRotateCamera("camera1", -Math.PI / 2, Math.PI / 2.5, 30, BABYLON.Vector3.Zero(), scene);
-                              camera.attachControl(canvas, true);
-                    }
-                    const createScene = function () {
-                              const scene = new BABYLON.Scene(engine);
-                              makeCamera(scene);
-                              makeLight(scene);
-                              makeGround(scene);
-
-                              // Load the sound and play it automatically once ready
-                              const music = new BABYLON.Sound("cello", "https://playground.babylonjs.com/sounds/cellolong.wav", scene, null, { loop: true, autoplay: false });
-
-                              const roof = BABYLON.MeshBuilder.CreateCylinder("roof", { diameter: 1.3, height: 1.3, tessellation: 3 });
-                              // Para un cilindro con tessellation: 3, el resultado será un cilindro con tres facetas, que en realidad se verá como un prisma triangular (una forma de pirámide con una base triangular)
-                              roof.rotation.z = Math.PI / 2;
-                              roof.position.y = 1.3;
-                              const roofMat = new BABYLON.StandardMaterial("roofMat");
-                              roofMat.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/roof.jpg", scene);
-                              roof.material = roofMat;
-
-                              // Built-in 'sphere' shape.
-                              const box = BABYLON.MeshBuilder.CreateBox("box", { diameter: 1.3, segments: 32 }, scene);
-                              box.position.y = .5;
-                              box.rotation.y = BABYLON.Tools.ToRadians(90);
-                              const boxMat = new BABYLON.StandardMaterial("boxMat");
-                              boxMat.diffuseTexture = new BABYLON.Texture("https://www.babylonjs-playground.com/textures/floor.png");
-                              box.material = boxMat;
-
-                              // CAJA CON CARAS
-                              const boxMat2 = new BABYLON.StandardMaterial("boxMat2");
-                              boxMat2.diffuseTexture = new BABYLON.Texture("https://assets.babylonjs.com/environments/cubehouse.png")
-                              //options parameter to set different images on each side
-                              const faceUV = [];
-                              faceUV[0] = new BABYLON.Vector4(0.5, 0.0, 0.75, 1.0); //rear face
-                              faceUV[1] = new BABYLON.Vector4(0.0, 0.0, 0.25, 1.0); //front face
-                              faceUV[2] = new BABYLON.Vector4(0.25, 0, 0.5, 1.0); //right side
-                              faceUV[3] = new BABYLON.Vector4(0.75, 0, 1.0, 1.0); //left side
-                              faceUV[4] = new BABYLON.Vector4(0.5, 0.0, 0.75, 1.0); //left side
-                              // top 4 and bottom 5 not seen so not set
-                              /**** World Objects *****/
-                              const house = BABYLON.MeshBuilder.CreateBox("box", { faceUV: faceUV, wrap: true });
-                              house.material = boxMat2;
-                              house.position.x = 1;
-                              house.position.y = .5;
-
-                              // UNIÓN DE ELEMENOS
-                              const houseAndRoof = BABYLON.Mesh.MergeMeshes([box, roof], true, false, null, false, true);
-                              houseAndRoof.position.x = 0;
-                              houseAndRoof.position.y = 0;
-
-                              // Clona y es independiente
-                              const houseAndRoof2 = houseAndRoof.clone("clonedHouseAndRoof")
-                              houseAndRoof2.position.x = -3
-                              //houseAndRoof2.rotation.y = Math.PI / 3; // Rotación la copia
-
-                              // ICloning gives you an independent copy
-                              // Memoria: Las instancias ocupan menos memoria comparado con los clones porque comparten la geometría y el material del objeto original.
-                              const houseAndRoof3 = houseAndRoof.createInstance("InstanceHouseAndRoof")
-                              houseAndRoof3.position.x = -5
-
-                              houseAndRoof.rotation.y = Math.PI / 4; // Rotación el original
-
-                              const houses = []
-                              for (let i = 0; i < 20; i++) {
-                                        houses[i] = houseAndRoof.createInstance("houses" + i)
-                                        houses[i].rotation.y = i + 3;
-                                        houses[i].position.z = i + 3;
+                        const wheelRB = BABYLON.MeshBuilder.CreateCylinder(
+                              "wheelRB",
+                              {
+                                    diameter: 0.125,
+                                    height: 0.05,
                               }
+                        );
+                        wheelRB.parent = car;
+                        wheelRB.position.z = -0.1;
+                        wheelRB.position.x = -0.2;
+                        wheelRB.position.y = 0.035;
 
-                              return scene;
-                    };
-                    const scene = createScene(); //Call the createScene function
-                    // Register a render loop to repeatedly render the scene
-                    engine.runRenderLoop(function () {
-                              scene.render();
-                    });
-                    // Watch for browser/canvas resize events
-                    window.addEventListener("resize", function () {
-                              engine.resize();
-                    });
-          </script>
+                        const wheelRF = wheelRB.clone("wheelRF");
+                        wheelRF.position.x = 0.1;
 
-</body>
+                        const wheelLB = wheelRB.clone("wheelLB");
+                        wheelLB.position.y = -0.2 - 0.035;
 
+                        const wheelLF = wheelRF.clone("wheelLF");
+                        wheelLF.position.y = -0.2 - 0.035;
+                  };
+                  const createScene = function () {
+                        const scene = new BABYLON.Scene(engine);
+                        makeCamera(scene);
+                        makeLight(scene);
+                        makeGround(scene);
+                        makeCar(scene);
+
+                        // Load the sound and play it automatically once ready
+                        const music = new BABYLON.Sound(
+                              "cello",
+                              "https://playground.babylonjs.com/sounds/cellolong.wav",
+                              scene,
+                              null,
+                              { loop: true, autoplay: false }
+                        );
+
+                        const roof = BABYLON.MeshBuilder.CreateCylinder(
+                              "roof",
+                              {
+                                    diameter: 1.3,
+                                    height: 1.3,
+                                    tessellation: 3,
+                              }
+                        );
+                        // Para un cilindro con tessellation: 3, el resultado será un cilindro con tres facetas, que en realidad se verá como un prisma triangular (una forma de pirámide con una base triangular)
+                        roof.rotation.z = Math.PI / 2;
+                        roof.position.y = 1.3;
+                        const roofMat = new BABYLON.StandardMaterial("roofMat");
+                        roofMat.diffuseTexture = new BABYLON.Texture(
+                              "https://assets.babylonjs.com/environments/roof.jpg",
+                              scene
+                        );
+                        roof.material = roofMat;
+
+                        // Built-in 'sphere' shape.
+                        const box = BABYLON.MeshBuilder.CreateBox(
+                              "box",
+                              { diameter: 1.3, segments: 32 },
+                              scene
+                        );
+                        box.position.y = 0.5;
+                        box.rotation.y = BABYLON.Tools.ToRadians(90);
+                        const boxMat = new BABYLON.StandardMaterial("boxMat");
+                        boxMat.diffuseTexture = new BABYLON.Texture(
+                              "https://www.babylonjs-playground.com/textures/floor.png"
+                        );
+                        box.material = boxMat;
+
+                        // CAJA CON CARAS
+                        const boxMat2 = new BABYLON.StandardMaterial("boxMat2");
+                        boxMat2.diffuseTexture = new BABYLON.Texture(
+                              "https://assets.babylonjs.com/environments/cubehouse.png"
+                        );
+                        //options parameter to set different images on each side
+                        const faceUV = [];
+                        faceUV[0] = new BABYLON.Vector4(0.5, 0.0, 0.75, 1.0); //rear face
+                        faceUV[1] = new BABYLON.Vector4(0.0, 0.0, 0.25, 1.0); //front face
+                        faceUV[2] = new BABYLON.Vector4(0.25, 0, 0.5, 1.0); //right side
+                        faceUV[3] = new BABYLON.Vector4(0.75, 0, 1.0, 1.0); //left side
+                        faceUV[4] = new BABYLON.Vector4(0.5, 0.0, 0.75, 1.0); //left side
+                        // top 4 and bottom 5 not seen so not set
+                        /**** World Objects *****/
+                        const house = BABYLON.MeshBuilder.CreateBox("box", {
+                              faceUV: faceUV,
+                              wrap: true,
+                        });
+                        house.material = boxMat2;
+                        house.position.x = 1;
+                        house.position.y = 0.5;
+
+                        // UNIÓN DE ELEMENOS
+                        const houseAndRoof = BABYLON.Mesh.MergeMeshes(
+                              [box, roof],
+                              true,
+                              false,
+                              null,
+                              false,
+                              true
+                        );
+                        houseAndRoof.position.x = 0;
+                        houseAndRoof.position.y = 0;
+
+                        // Clona y es independiente
+                        const houseAndRoof2 =
+                              houseAndRoof.clone("clonedHouseAndRoof");
+                        houseAndRoof2.position.x = -3;
+                        //houseAndRoof2.rotation.y = Math.PI / 3; // Rotación la copia
+
+                        // ICloning gives you an independent copy
+                        // Memoria: Las instancias ocupan menos memoria comparado con los clones porque comparten la geometría y el material del objeto original.
+                        const houseAndRoof3 = houseAndRoof.createInstance(
+                              "InstanceHouseAndRoof"
+                        );
+                        houseAndRoof3.position.x = -5;
+
+                        houseAndRoof.rotation.y = Math.PI / 4; // Rotación el original
+
+                        const houses = [];
+                        for (let i = 0; i < 20; i++) {
+                              houses[i] = houseAndRoof.createInstance(
+                                    "houses" + i
+                              );
+                              houses[i].rotation.y = i + 3;
+                              houses[i].position.z = i + 3;
+                        }
+
+                        return scene;
+                  };
+                  const scene = createScene(); //Call the createScene function
+                  // Register a render loop to repeatedly render the scene
+                  engine.runRenderLoop(function () {
+                        scene.render();
+                  });
+                  // Watch for browser/canvas resize events
+                  window.addEventListener("resize", function () {
+                        engine.resize();
+                  });
+            </script>
+      </body>
 </html>
